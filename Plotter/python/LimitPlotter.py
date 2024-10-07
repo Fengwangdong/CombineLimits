@@ -11,13 +11,13 @@ import ROOT
 from CombineLimitsRunII.Plotter.PlotterBase import PlotterBase
 from CombineLimitsRunII.Utilities.utilities import python_mkdir
 import CombineLimitsRunII.Plotter.CMS_lumi as CMS_lumi
-import CombineLimitsRunII.Plotter.tdrstyle as tdrstyle
+import CombineLimitsRunII.Plotter.tdrStyle as tdrstyle
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 ROOT.gROOT.ProcessLine("gErrorIgnoreLevel = 1001;")
-tdrstyle.setTDRStyle()
 ROOT.gStyle.SetPalette(ROOT.kBlueGreenYellow)
 ROOT.TGaxis.SetMaxDigits(3)
+tdrstyle.setTDRStyle()
 
 #stops = array('d',[0, 0.749, 0.751, 1.0])
 #red   = array('d',[  0./255,   51./255,  51./255,   0./255])
@@ -47,6 +47,7 @@ class LimitPlotter(PlotterBase):
     def __init__(self,**kwargs):
         '''Initialize the plotter'''
         super(LimitPlotter, self).__init__('Limits',**kwargs)
+        self.year = kwargs.pop('year','all')
         # initialize stuff
 
     def _getGraphs(self,xvals,limits,**kwargs):
@@ -122,7 +123,7 @@ class LimitPlotter(PlotterBase):
             canvas = ROOT.TCanvas(savename,savename,800,800)
             xFrame.Draw()
             canvas.Print('{0}.png'.format(savename))
-            
+
         if model and xVar:
             # smooth to a pdf
             fit('twoSigma_low', twoSigmaDS_low)
@@ -200,7 +201,7 @@ class LimitPlotter(PlotterBase):
             oneSigma.SetPoint(2*n-i-1,  oneSigma.GetX()[2*n-i-1],    oneSigma.GetY()[2*n-i-1]*scale) # 0.84
             twoSigma.SetPoint(2*n-i-1,  twoSigma.GetX()[2*n-i-1],    twoSigma.GetY()[2*n-i-1]*scale) # 0.975
             observed.SetPoint(     i,   observed.GetX()[i],    observed.GetY()[i]*scale) # obs
-        
+
         twoSigma.SetFillColor(ROOT.kOrange)
         twoSigma.SetLineColor(ROOT.kOrange)
         twoSigma.SetMarkerStyle(0)
@@ -300,7 +301,7 @@ class LimitPlotter(PlotterBase):
 
         if additionaltext:
             nlines = 1 if isinstance(additionaltext,str) else len(additionaltext)
-            text = ROOT.TPaveText(0.20,0.90-nlines*0.04,0.45,0.92,'NB NDC')
+            text = ROOT.TPaveText(0.20,0.85-nlines*0.04,0.45,0.85,'NB NDC')
             text.SetTextFont(42)
             text.SetBorderSize(0)
             text.SetFillColor(0)
@@ -312,6 +313,7 @@ class LimitPlotter(PlotterBase):
                 text.AddText(additionaltext)
             text.Draw()
 
+        ROOT.gPad.RedrawAxis()
         # cms lumi styling
         self._setStyle(canvas,position=lumipos,preliminary=isprelim)
 
@@ -485,7 +487,7 @@ class LimitPlotter(PlotterBase):
                 save += [(x,y,ve,vel,veh)]
 
         self._saveCSV(save,savename)
-                
+
 
     def plotLimit2DProjectionMulti(self,xvalsMulti,yval,quartilesMulti,scalesMulti,savename,**kwargs):
         '''Plot limits'''
@@ -674,12 +676,12 @@ class LimitPlotter(PlotterBase):
                 save += [(x,y,ve,vel,veh)]
 
         self._saveCSV(save,savename)
-                
+
 
 
     def plotLimitMulti(self,xvalsMulti,quartilesMulti,savename,**kwargs):
         '''Plot limits
-        
+
         Structure should be:
             xvals: [[x00, x01, ...], [x10, x11, ...], ...]
             quartiles: similarly but with [xij] replaced by {xij: [-2s, -1s, exp, +1s, +2s, obs]}
@@ -782,7 +784,7 @@ class LimitPlotter(PlotterBase):
 
         if additionaltext:
             nlines = 1 if isinstance(additionaltext,str) else len(additionaltext)
-            text = ROOT.TPaveText(0.22,0.90-nlines*0.04,0.42,0.92,'NB NDC')
+            text = ROOT.TPaveText(0.22,0.86-nlines*0.04,0.42,0.88,'NB NDC')
             text.SetTextFont(42)
             text.SetBorderSize(0)
             text.SetFillColor(0)
@@ -794,6 +796,7 @@ class LimitPlotter(PlotterBase):
                 text.AddText(additionaltext)
             text.Draw()
 
+        ROOT.gPad.RedrawAxis()
         ## HACK
         ## plot 750 GeV FullCLs over
         #fullcls = {}
@@ -978,7 +981,7 @@ class LimitPlotter(PlotterBase):
                 contLevel = conts.At(i)
                 for j in range(contLevel.GetSize()):
                     graphs += [contLevel.At(j).Clone()]
-                    
+
             return graphs
 
         expected_graphs = {}
@@ -1197,6 +1200,7 @@ class LimitPlotter(PlotterBase):
         #leg_two_high.Draw('same')
 
 
+        ROOT.gPad.RedrawAxis()
         # cms lumi styling
         self._setStyle(canvas,position=lumipos,preliminary=isprelim)
 
@@ -1215,7 +1219,7 @@ class LimitPlotter(PlotterBase):
                 save += [(x,y,ve,vel,veh)]
 
         self._saveCSV(save,savename)
-                
+
 
 
 
@@ -1354,7 +1358,7 @@ class LimitPlotter(PlotterBase):
                 contLevel = conts.At(i)
                 for j in range(contLevel.GetSize()):
                     graphs += [contLevel.At(j).Clone()]
-                    
+
             return graphs
 
         expected_graphs = {}
@@ -1590,7 +1594,7 @@ class LimitPlotter(PlotterBase):
                 save += [(x,y,ve,vel,veh)]
 
         self._saveCSV(save,savename)
-                
+
 
 
     def plotMultiExpected(self,xvals,quartiles,labels,savename,**kwargs):

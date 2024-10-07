@@ -41,20 +41,17 @@ varHists = {
     'hkf': 'hMassKinFit',
 }
 
-#hmasses = [125, 250]
-hmasses = [125, 250, 500, 750, 1000]
-#hmasses = [1000]
-#hmasses = [125, 1000]
+hmasses = []
 
-amasses = ['3p6','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21']
+amasses = ['3p6','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21']
 #amasses = ['5', '10', '15', '20']
 hamap = {
-    1000:['10', '20', '30', '40'],
+    1000:['10', '20', '30', '40', '50'],
     750:['10', '15', '20', '25', '30'],
     500:['5', '10', '15', '20'],
     250:['5', '10', '15', '20'],
     125:amasses
-    } 
+    }
 
 signame = 'hm{h}_am{a}'
 
@@ -108,7 +105,8 @@ def parse_command_line(argv):
     parser.add_argument('--fitParams', action='store_true', help='fit parameters')
     parser.add_argument('--doubleExpo', action='store_true', help='Use double expo')
     parser.add_argument('--landau', action='store_true', help='Use landau')
-    parser.add_argument('--higgs', type=int, default=125, choices=[125,300,750])
+    parser.add_argument('--powerlaw', action='store_true', help='Use powerlaw')
+    parser.add_argument('--higgs', type=int, default=125, choices=[125,250,500,750,1000])
     parser.add_argument('--pseudoscalar', type=int, default=7, choices=[5,7,9,11,13,15,17,19,21])
     parser.add_argument('--yFitFunc', type=str, default='', choices=['G','V','CB','DCB','DG','DV','DVh','B','G2','G3','errG','L','MB'])
     parser.add_argument('--xRange', type=float, nargs='*', default=[2.5,25])
@@ -128,31 +126,33 @@ if __name__ == "__main__":
     initUtils(args)
 
     xVar=varHists[sys.argv[1]]
-    
+
     do2D = len(args.fitVars)==2
     var = args.fitVars
 
     if 'TauHadTauHad' in args.channel[0]:
-        xBinWidth = 0.02
+        xBinWidth = 0.05
+        #xBinWidth = 0.02
         sigSysType=['JEC']
         if do2D:
             yVar=varHists[sys.argv[2]]
             yBinWidth = 0.25 if var[1]=='tt' else 2
-            
+            #yBinWidth = 0.25 if var[1]=='tt' else 2
+
     elif 'TauETauHad' in args.channel[0] or 'TauMuTauHad' in args.channel[0]:
         xBinWidth = 0.05
         sigSysType=['tauIDScale']
         if do2D:
             yVar=varHists[sys.argv[2]]
             yBinWidth = 0.25 if var[1]=='tt' else 5
-            
+
     elif 'TauMuTauE' in args.channel[0]:
         xBinWidth = 0.05
         sigSysType = ['electronIDScale']
         if do2D:
             yVar=varHists[sys.argv[2]]
             yBinWidth = 0.25 if var[1]=='tt' else 5
-            
+
     elif 'TauMuTauMu' in args.channel[0]:
         xBinWidth = 0.05
         sigSysType=['muonIsoScale']
@@ -169,7 +169,7 @@ if __name__ == "__main__":
 
     sigShifts = [u+s for u in sigSysType for s in ['Up','Down']]
     bgShifts = [u+s for u in bgSysType for s in ['Up','Down']]
-    
+
     if do2D and var[1]=='tt': yRange = [0.75,30]
     if args.yRange: yRange = args.yRange
     xRange = args.xRange
@@ -198,23 +198,24 @@ if __name__ == "__main__":
 
     #global hmasses
     if not args.do2DInterpolation:
-        hmasses = [h for h in hmasses if h in [125, 250, 500, 750, 1000]]
+        hmasses = [args.higgs]
+        #hmasses = [h for h in hmasses if h in [125, 250, 500, 750, 1000]]
 
     #backgrounds = ['datadriven', 'data']
     if blind:
         backgrounds = ['datadriven']
     else:
         backgrounds = ['datadriven', 'data']
-    
+
     signals = [signame.format(h=h,a=a) for h in hmasses for a in hamap[h]]
     print "signals:", signals, hmasses, hamap[h]
     signalToAdd = signame.format(**signalParams)
 
-    
+
     ##############################
     ### Create/read histograms ###
     ##############################
-    
+
     histMap = {}
     # The definitons of which regions match to which arguments
     # PP can take a fake rate datadriven estimate from FP, but FP can only take the observed values
@@ -222,7 +223,7 @@ if __name__ == "__main__":
         'PP': {'region':'signalRegion','fakeRegion':'B','source':'B','sources':['A','C'],'fakeSources':['B','D'],},
         'FP': {'region':'sideBand','sources':['B','D'],},
     }
-    
+
     #thesesamples = backgrounds
     #if not skipSignal: thesesamples = backgrounds + signals
     thesesamples = backgrounds + signals
@@ -257,7 +258,7 @@ if __name__ == "__main__":
                     shift = ''
                     logging.info('Getting {} observed {}'.format(mode, shift))
                     histMap[mode]['']['data'] = getDatadrivenHist('data',channel,doUnbinned=False,var=var,shift='nominal',do2D=do2D,**regionArgs[modeTag])
-            
+
             for shift in ['nominal']+sigShifts:
                 if shift == 'nominal': shifttext = ''
                 else: shifttext = shift
@@ -269,7 +270,7 @@ if __name__ == "__main__":
                             oldXRange = xRange
                             xRange = [0,50]
                             histMap[mode][shifttext][proc] = getSignalHist(proc,channel,doUnbinned=True,var=var,shift=shift,do2D=do2D,**regionArgs[modeTag])
-                            
+
                             xRange = oldXRange
 
     year = channels[0].split('_')[-1]
@@ -278,7 +279,7 @@ if __name__ == "__main__":
         for shift in ['']:
             histMap[mode][shift] = {}
             if shift: continue
-            
+
             logging.info('Getting {} observed'.format(mode))
             hist = getControlHist('control',channel,doUnbinned=doUnbinned,var=var)
             j+=1
@@ -298,7 +299,7 @@ if __name__ == "__main__":
         scales[proc] = scale
         print "Signal Normalization:", proc, gg, vbf, scale #vbf
 
-    
+
     name = []
     if args.unbinned: name += ['unbinned']
     if do2D: name += [var[1]]
@@ -329,12 +330,15 @@ if __name__ == "__main__":
     haaLimits.XBINNING = int((xRange[1]-xRange[0])/xBinWidth)
     haaLimits.XVAR = xVar
     haaLimits.CHANNELS = channels
-    if do2D: 
+    if do2D:
         haaLimits.YVAR = yVar
-        haaLimits.YRANGE = [0, 1200]
-        haaLimits.YBINNING = int(1200./yBinWidth)
+        #haaLimits.YRANGE = [0, 1200]
+        #haaLimits.YBINNING = int(1200./yBinWidth)
+        haaLimits.YRANGE = yRange
+        haaLimits.YBINNING = int((yRange[1]-yRange[0])/yBinWidth)
         haaLimits.DOUBLEEXPO = args.doubleExpo
         haaLimits.LANDAU = args.landau
+        haaLimits.POWERLAW = args.powerlaw
     if 'tt' in var: haaLimits.YLABEL = 'm_{#tau_{#mu}#tau_{h}}'
     if 'h' in var or 'hkf' in var:
         channelT = channels[0].split('_')[0]
@@ -369,10 +373,10 @@ if __name__ == "__main__":
     haaLimits.addSystematics(addControl=args.addControl,doBinned=not doUnbinned)
     name = 'mmmt_{}_parametric'.format('_'.join(var))
     if args.unbinned: name += '_unbinned'
-    if args.unblind: name += '_unblind'
+    #if args.unblind: name += '_unblind'
     if args.tag: name += '_{}'.format(args.tag)
     if args.addSignal: name += '_wSig'
     print "name:", name
     haaLimits.save(name=name)
     print "DONE!!!"
-    
+

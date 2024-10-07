@@ -38,11 +38,15 @@ def which(program):
 
     return None
 
-def getLumi():
-    #return 36330.060 # full 2016
-    #return 41480 # full 2017 
-    return 59830 # full 2018
-    #return 137640 # full run 2
+def getLumi(year):
+    if year == '2016':
+       return 35920 # full 2016
+    elif year == '2017':
+       return 41529 # full 2017
+    elif year == '2018':
+       return 59740 # full 2018
+    else:
+       return 137640 # full run 2
 
 def runCommand(command):
     return subprocess.Popen(command,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()[0]

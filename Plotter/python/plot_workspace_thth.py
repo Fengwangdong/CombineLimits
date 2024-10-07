@@ -106,11 +106,11 @@ if doPostfit:
     jfile = 'impacts_mm_h_unbinned_with1DFits_125_7.json' # for now while the other is not working
     with open(jfile,'r') as f:
         postfit = json.load(f)
-    
+
     postParams = {}
     for p in postfit['params']:
         postParams[p['name']] = p
-    
+
     for p in params:
         param = ws.arg(p)
         val = postParams[p]['fit'][1]

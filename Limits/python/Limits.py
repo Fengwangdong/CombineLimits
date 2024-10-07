@@ -12,7 +12,7 @@ class Limits(object):
     '''
     Limits
 
-    A class to encapsulate an analysis selection and produce 
+    A class to encapsulate an analysis selection and produce
     a datacard that can be read by the Higgs Combine tool.
     '''
 
@@ -190,7 +190,7 @@ class Limits(object):
         #}
         #if filename: self.rates[ratename]['filename'] = filename
         #if workspace: self.rates[ratename]['workspace'] = workspace
-        
+
     def addShape(self,bin,process,shape):
         '''
         Add a shape definition. By default, shapes are stored
@@ -243,7 +243,7 @@ class Limits(object):
             systname = syst.format(process=process,bin=bin)
             if systname not in systs:
                 systs[systname] = {
-                    'mode' : self.systematics[syst]['mode'], 
+                    'mode' : self.systematics[syst]['mode'],
                     'systs': {},
                 }
             systs[systname]['systs'][(bin,process)] = self.getSystematic(systname,process,bin)
@@ -332,7 +332,7 @@ class Limits(object):
         '''
 
         shapes = self._printMultipleCards(filename,bins,processes,blind,addSignal,saveWorkspace,suffix)
-        
+
         # shape file
         if saveWorkspace or shapes:
             outname = filename+'.root'
@@ -378,13 +378,14 @@ class Limits(object):
         backgroundsOrig = self.backgrounds
 
         signalName = ['ggH_haa'+suffix.replace("_amX", "").replace("hm", "")]
-        
+
         if bins==['all']: bins = self.bins
         #if processes==['all']: processes = self.processes.keys()
         #signals = [x+'_'+y for x in self.signals for y in channels]
         signals = [x+'_'+y for x in signalName for y in channels]
         backgrounds = [x+'_'+y for x in self.backgrounds for y in channels]
         year = channels[0].split('_')[-1]
+
         control = [x+'_'+'control'+'_'+year for x in self.controls]
         print "DEBUG controls:", control, self.controls
         #control = [x.split('_')[0]+'_'+'control' for x in self.backgrounds]
@@ -396,7 +397,7 @@ class Limits(object):
         #nsignals=len(self.signals)
         nsignals = len(signals)
         nbackgrounds=len(self.backgrounds)
-        
+
         # setup bins
         binRows = ['bin']
         observations = ['observation']
@@ -448,9 +449,9 @@ class Limits(object):
         #            processOrderedNew += [process]
 
         #processesOrdered = processesOrderedNew
-                    
+
         #print "DEBUG1",processesOrdered
-        
+
         for bin in bins:
             #print "----------------"
             #print "bin:", bin
@@ -458,7 +459,7 @@ class Limits(object):
             for process in processesOrdered:
                 if 'control' in bin:
                     processText = process
-                else:                    
+                else:
                     processText = process+'_'+bin.split('_')[-1]
                 exp = self.getExpected(processText,bin)
                 print "exp",processText, bin, exp
@@ -469,7 +470,7 @@ class Limits(object):
                     continue
                 binsForRates[colpos] = binName.format(bin=bin)
                 #print "colpos:", colpos, "process:", processText, "binsForRates[colpos]:", binsForRates[colpos]
-                
+
                 #if binsForRates[colpos] == 'control':
                 #    processNames[colpos] = process.split('_')[0]
                 #else:
@@ -545,7 +546,7 @@ class Limits(object):
             for proc in processesOrdered:
                 if 'control' in proc: continue
                 processes += [proc+'_'+b.split('_')[-1]]
-        
+
         systs = {}
         keys = []
         for bin in bins:
@@ -570,7 +571,7 @@ class Limits(object):
                 for process in processesOrdered:
                     if bin == 'control':
                         processText = process
-                    else:                    
+                    else:
                         processText = process+'_'+bin.split('_')[-1]
                     key = (bin,processText)
                     #print "key:", key
@@ -712,7 +713,7 @@ class Limits(object):
             else:
                 f.write('shapes * * FAKE\n')
             f.write('-'*lineWidth+'\n')
-            
+
             # observation
             f.write(getline(binRows))
             f.write(getline(observations))

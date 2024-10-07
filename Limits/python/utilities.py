@@ -8,7 +8,7 @@ import math
 import json
 import pickle
 import glob
-
+import ctypes
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch()
@@ -67,32 +67,32 @@ def sumHists(name,*hists):
     return hist
 
 def getDatasetIntegralError(dataset, cutSpec=''):
-    
+
     select = ROOT.RooFormula()
     if cutSpec:
         select = ROOT.RooFormula("select",cutSpec,ROOT.RooArgList(dataset.get()))
-    
+
     if not cutSpec and not dataset.isWeighted():
         return dataset.numEntries()**0.5
-    
+
     sumw2 = 0
     for i in xrange(dataset.numEntries()):
         dataset.get(i)
         if (cutSpec and select.eval()==0.): continue
         sumw2 += dataset.weight()**2
-    
+
     return sumw2**0.5
 
 
 def getHistogramIntegralError(hist,binlow=1,binhigh=-1):
     if binhigh<0: binhigh = hist.GetNbinsX()
-    integralerr = ROOT.Double(0)
-    hist.IntegralAndError(binlow,binhigh,integralerr,"")
+    integralerr = 0
+    hist.IntegralAndError(binlow,binhigh,ctypes.c_double(integralerr),"")
     return float(integralerr)
 
 def getHistogram2DIntegralError(hist,binxlow=1,binxhigh=-1,binylow=1,binyhigh=-1):
     if binxhigh<0: binxhigh = hist.GetNbinsX()
     if binyhigh<0: binyhigh = hist.GetNbinsY()
     integralerr = ROOT.Double(0)
-    hist.IntegralAndError(binxlow,binxhigh,binylow,binyhigh,integralerr,"")
+    hist.IntegralAndError(binxlow,binxhigh,binylow,binyhigh,ctypes.c_double(integralerr),"")
     return float(integralerr)

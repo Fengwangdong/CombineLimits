@@ -31,32 +31,57 @@ def initUtils(args):
 
     global baseDir
     #global desc
-    baseDir = '/eos/user/z/zhangj/HaaAnalysis/rooDatasets/'
-    #baseDir = '/eos/user/z/zhangj/HaaAnalysis/rooDatasets_test/'
-    #baseDir = '/eos/cms/store/user/rhabibul/BoostedRooDatasets/'
+    #baseDir = '/afs/cern.ch/user/f/fengwang/workplace/CombinedLimits/CMSSW_10_2_18/src/CombineLimitsRunII/outputRooDataset/'
+    baseDir = '/afs/cern.ch/user/f/fengwang/workplace/public/ForRedwan/rooDatasets/'
     #desc = 'MVAMedium'
+
+###### Utility to get Roodatahist ########################
+def getRooDatahist(f,selection='1',weight='',xRange=[],yRange=[],project='',xVar='invMassMuMu',yVar='visFourbodyMass',shift=''):
+    '''Get a RooDatahist'''
+    file=ROOT.TFile.Open(f)
+    dsname='dataColl'
+    ds=file.Get(dsname)
+    #print ds
+    args=ds.get()
+    "Getting RooDatahist"
+    #print f, xRange, yRange, selection, project
+    if xRange: args.find('invMassMuMu').setRange(*xRange)
+    #print "DEBUG:", yRange
+    if yRange: args.find('visFourbodyMass').setRange(*yRange)
+    print "yRange:", args.find('visFourbodyMass').getMax()
+    if xVar!='invMassMuMu': args.find('invMassMuMu').SetName(xVar)
+    if yVar!='visFourbodyMass':args.find('visFourbodyMass').SetName(yVar)
+    #ds = ROOT.RooDataHist(ds.GetName(),ds.GetTitle(),ds,args,selection,weight)
+    if project: ds = getattr(ds,'reduce')(ROOT.RooArgList(ds.get().find(project)))
+    #print selection
+    #print ds.sumEntries('invMassMuMu>0 && invMassMuMu<30 && visFourbodyMass>0 && visFourbodyMass<1000')
+    return ds
 
 ###### Utility to get Roodatasets ########################
 def getRooDataset(f,selection='1',weight='',xRange=[],yRange=[],project='',xVar='invMassMuMu',yVar='visFourbodyMass',shift=''):
-    print '''Get a RooDataset'''
+    '''Get a RooDataset'''
     file=ROOT.TFile.Open(f)
     dsname='dataColl'
     ds=file.Get(dsname)
     #print ds
     args=ds.get()
     "Getting RooDataset"
+    #print f, xRange, yRange, selection, project
     if xRange: args.find('invMassMuMu').setRange(*xRange)
+    #print "DEBUG:", yRange
     if yRange: args.find('visFourbodyMass').setRange(*yRange)
+    print "yRange:", args.find('visFourbodyMass').getMax()
     if xVar!='invMassMuMu': args.find('invMassMuMu').SetName(xVar)
     if yVar!='visFourbodyMass':args.find('visFourbodyMass').SetName(yVar)
-    ds = ROOT.RooDataSet(ds.GetName(),ds.GetTitle(),ds,args,selection)
+    ds = ROOT.RooDataSet(ds.GetName(),ds.GetTitle(),ds,args,selection,weight)
     if project: ds = getattr(ds,'reduce')(ROOT.RooArgSet(ds.get().find(project)))
-    print "dsIntegral:", ds.sumEntries()
+    #print selection
+    #print ds.sumEntries('invMassMuMu>0 && invMassMuMu<30 && visFourbodyMass>0 && visFourbodyMass<1000')
     return ds
 
 
-def getRooDatasetWeight(f,selection='1',weight='fakeRateEfficiency',xRange=[],yRange=[],project='',xVar='invMassMuMu',yVar='visFourbodyMass'):
-    print '''Get a DataDriven RooDataset'''
+def getRooDatasetFake(f,selection='1',weight='fakeRateEfficiency',xRange=[],yRange=[],project='',xVar='invMassMuMu',yVar='visFourbodyMass'):
+    '''Get a DataDriven RooDataset'''
     file=ROOT.TFile.Open(f)
     ds=file.Get('dataColl')
     args=ds.get()
@@ -70,14 +95,14 @@ def getRooDatasetWeight(f,selection='1',weight='fakeRateEfficiency',xRange=[],yR
     print "dsIntegral:", ds.sumEntries()
     return ds
 
-###### Utility to get Histos ########################  
+###### Utility to get Histos ########################
 def getHist2D(f,selection='1',xVar='invMassMuMu',yVar='visFourbodyMass',xBinning='',yBinning=''):
     '''Get a 2D Histogram from RooDataset'''
     file=ROOT.TFile.Open(f)
     ds=file.Get('dataColl')
     hist=ROOT.TH2F()
     hist=ds.createHistogram(ds.get().find(xVar),ds.get().find(yVar),int(xBinning),int(yBinning),selection,ds.GetName())
-    hist.SetDirectory(ROOT.gROOT) 
+    hist.SetDirectory(ROOT.gROOT)
     return hist
 
 def getHistControl(f,selection='1',xVar='invMassMuMu',Binning='1'):
@@ -102,8 +127,9 @@ def getHisto(f,do2D,channel,xVar='invMassMuMu',xRange=[],process=''):
             xVarnew = xVar+"3P1F1"
         else:
             xVarnew=xVar
-    
+
     if process == "data":
+        #xVarnew=xVar+"3P1F1Only"
         xVarnew=xVar+"3P1F1"
     elif process =="datadriven":
         xVarnew = xVar+"3P1F1"
@@ -111,69 +137,30 @@ def getHisto(f,do2D,channel,xVar='invMassMuMu',xRange=[],process=''):
         xVarnew=xVar
 
     file=ROOT.TFile.Open(f)
+    #print f, xVarnew
+    #histo=file.Get(xVarnew, str(xRange[0])+"<"+xVarnew+"<"+str(xRange[1]))
     histo=file.Get(xVarnew)
     histo.SetDirectory(ROOT.gROOT)
-        
+
+    #if not do2D and (process=="datadriven" or process == "data"):
+        #if xRange:
+            #print "xRange: ", xRange
+            #histo.GetXaxis().SetRangeUser(*xRange)
+            #binning = array.array('d',[histo.GetXaxis().GetXmin(), 2.5, 2.75, 3., 3.25, 3.5, 3.75, 4., 5, 6, 7, 8.5, histo.GetXaxis().GetXmax()])
+            #histo.Rebin(12, "rebin", binning)
+            #print "nBins",histo, histo.GetNbinsX()
+
     if do2D:
         if process == "datadriven" or process == "data": histo.RebinY(4)
     return histo
-    
 
-#################
-### Utilities ###
-#################
-
-def getHisto(f,do2D,channel,xVar='invMassMuMu',xRange=[],process=''):
-    ''' Get Histogram directly from file '''
-    if do2D:
-        xVar='invMassMuMuVisMassMuMuTauTau'
-        if process == "data":
-            xVarnew=xVar+"3P1F1Only"
-        elif process =="datadriven":
-            xVarnew = xVar+"3P1F1"
-        else:
-            xVarnew=xVar
-    
-    if process == "data":
-        xVarnew=xVar+"3P1F1"
-    elif process =="datadriven":
-        xVarnew = xVar+"3P1F1"
-    else:
-        xVarnew=xVar
-
-    file=ROOT.TFile.Open(f)
-    histo=file.Get(xVarnew)
-    histo.SetDirectory(ROOT.gROOT)
-        
-    if do2D:
-        if process == "datadriven" or process == "data": histo.RebinY(4)
-    return histo
-    
 
 #################
 ### Utilities ###
 #################
 def getDataset(File,channel,type,shift,do2D,xVar='invMassMuMu',yVar='visFourbodyMass'):
-    if 'hm250' in File and 'TauMuTauHad' in File:
-        thisyrange = [100, 230]
-    elif 'hm250' in File and 'TauHadTauHad' in File:
-        thisyrange = [120, 280]
-    elif 'hm500' in File and 'TauMuTauHad' in File:
-        thisyrange = [200, 500]
-    elif 'hm500' in File and 'TauHadTauHad' in File:
-        thisyrange = [220, 550]
-    elif 'hm750' in File and 'TauMuTauHad' in File:
-        thisyrange = [250, 750]
-    elif 'hm750' in File and 'TauHadTauHad' in File:
-        thisyrange = [250, 800]
-    elif 'hm1000' in File and 'TauMuTauHad' in File:
-        thisyrange = [250, 1000]
-    elif 'hm1000' in File and 'TauHadTauHad' in File:
-        thisyrange = [250, 1200]
-    else:
-        thisyrange = yRange
     thisxrange = xRange
-    #thisyrange = yRange
+    thisyrange = yRange
     maxyrange = maxyRange
     selDatasets = {
         'invMassMuMu' : '{0}>{1} && {0}<{2}'.format(xVar,*thisxrange),
@@ -182,26 +169,56 @@ def getDataset(File,channel,type,shift,do2D,xVar='invMassMuMu',yVar='visFourbody
 
     print "getDataset:", type
     print File
-    if True:
+    if "TauMuTauHad" in channel or "TauETauHad" in channel or "TauHadTauHad" in channel or "TauMuTauE" in channel or "TauMuTauMu" in channel or "TauETauE" in channel:
         if project and 'datadriven' in type:
-            dataset =getRooDatasetWeight(File,selection=selDatasets['invMassMuMu'],xRange=thisxrange,weight='fakeRateEfficiency',yRange=maxyrange,project=xVar,xVar=xVar,yVar=yVar)
+            dataset =getRooDatasetFake(File,selection=selDatasets['invMassMuMu'],xRange=thisxrange,weight='fakeRateEfficiency',yRange=thisyrange,project=xVar,xVar=xVar,yVar=yVar)
         elif not project and 'datadriven' in type:
-            dataset =getRooDatasetWeight(File,selection=selDatasets['invMassMuMu'],xRange=thisxrange,weight='fakeRateEfficiency',yRange=maxyrange,project='',xVar=xVar,yVar=yVar)
+            dataset =getRooDatasetFake(File,selection=selDatasets['invMassMuMu'],xRange=thisxrange,weight='fakeRateEfficiency',yRange=thisyrange,project='',xVar=xVar,yVar=yVar)
         elif not project and 'data' in type:
-            dataset =getRooDataset(File,selection=selDatasets['invMassMuMu'],xRange=thisxrange,weight='',yRange=maxyrange,project='',xVar=xVar,yVar=yVar,shift=shift)
+            dataset =getRooDataset(File,selection=selDatasets['invMassMuMu'],xRange=thisxrange,weight='',yRange=thisyrange,project='',xVar=xVar,yVar=yVar)
         else:
             weightname='eventWeight'
             # For signal dataset, use a different xRange, yRange, and selection
-            dataset =getRooDatasetWeight(File,selection=selDatasets['visFourbodyMass'],xRange=[0,50],weight=weightname,yRange=maxyrange,project='',xVar=xVar,yVar=yVar)
+            dataset =getRooDataset(File,selection=selDatasets['visFourbodyMass'],xRange=[0,60],weight=weightname,yRange=thisyrange,project='',xVar=xVar,yVar=yVar,shift=shift)
+
+    #elif "TauMuTauE" in channel:
+
+    #    if project and 'datadriven' in type:
+    #        dataset = getRooDatahist(File,selection=selDatasets['invMassMuMu'],xRange=thisxrange,weight='',yRange=maxyrange,project=xVar,xVar=xVar,yVar=yVar)
+    #    elif not project and 'datadriven' in type:
+    #        dataset = getRooDatahist(File,selection=selDatasets['invMassMuMu'],xRange=thisxrange,weight='',yRange=maxyrange,project='',xVar=xVar,yVar=yVar)
+    #    elif not project and 'data' in type:
+    #        dataset = getRooDatahist(File,selection=selDatasets['invMassMuMu'],xRange=thisxrange,weight='',yRange=maxyrange,project='',xVar=xVar,yVar=yVar)
+    #    else:
+    #        weightname='eventWeight'
+    #        # For signal dataset, use a different xRange, yRange, and selection
+    #        dataset = getRooDatahist(File,selection=selDatasets['visFourbodyMass'],xRange=[0,50],weight=weightname,yRange=maxyrange,project='',xVar=xVar,yVar=yVar,shift=shift)
+
+
+    #elif "TauETauE" in channel:
+    #    print File
+    #    if 'datadriven' in type:
+    #        print type
+    #        dataset=getHisto(File,do2D,channel,xRange=thisxrange,process='datadriven')
+    #    elif 'data' in type:
+    #        dataset= getHisto(File,do2D,channel,xRange=thisxrange,process='data')
+    #    else:
+    #        dataset=getHisto(File,do2D,channel,xRange=thisxrange,process='signal')
     else:
         raise ValueError('Channel Unknown in getDataset')
+
+    #print dataset
+    #global j
+    #j+=1
+    #return dataset.Clone('hist'+str(j))
+    #print "DEBUG!!!", dataset.Print()
     return dataset
 
 def getXsec(proc,mode):
     #prefix='root://cmseos.fnal.gov/'
     prefix = ''
-    smtfilename=prefix+'/afs/cern.ch/work/z/zhangj/private/RunIILimits/CMSSW_10_2_13/src/CombineLimits/Limits/data/Higgs_YR4_SM_13TeV.root'
-    bsmtfilename=prefix+'/afs/cern.ch/work/z/zhangj/private/RunIILimits/CMSSW_10_2_13/src/CombineLimits/Limits/data/Higgs_YR4_BSM_13TeV.root'
+    smtfilename=prefix+'/afs/cern.ch/user/f/fengwang/workplace/public/ForRedwan/Higgs_YR4_SM_13TeV.root'
+    bsmtfilename=prefix+'/afs/cern.ch/user/f/fengwang/workplace/public/ForRedwan/Higgs_YR4_BSM_13TeV.root'
 
     smtfile=ROOT.TFile(smtfilename)
     bsmtfile=ROOT.TFile(bsmtfilename)
@@ -231,7 +248,7 @@ def getControlHist(proc,channel,**kwargs):
     # Takes far too long to do this unbinned
 
     year = channel.split('_')[-1]
-    
+
     sampleDir = baseDir+'control/'+year
     filename = sampleDir + '/control_RooDataset_{}.root'.format(year)
     hists = [getHistControl(filename, Binning=xBins)]
@@ -239,6 +256,7 @@ def getControlHist(proc,channel,**kwargs):
     return hist
 
 def getSignalHist(proc,channel,**kwargs):
+    print "-----getSignalHist..."
     scale = kwargs.pop('scale',1)
     shift = kwargs.pop('shift','')
     region = kwargs.pop('region','A')
@@ -254,11 +272,13 @@ def getSignalHist(proc,channel,**kwargs):
 
     if 'TauMuTauE' in channel:
         desc = 'looseMuIso_tightEleId'
+    elif 'TauETauE' in channel:
+        desc = 'tightEleId_tightEleId'
     elif 'TauMuTauMu' in channel:
         desc = 'looseMuIso_looseMuIso'
     else:
         desc = 'MVAMedium'
-    
+
     sampleDir = baseDir+channeltext+'/'+yeartext+'/SignalMC/'
     filename = sampleDir + 'Haa_MC_{}_{}_{}_{}_{}_{}.root'.format(proc, channeltext, yeartext, desc, region, shift)
     hists = [getDataset(filename,channel,proc,shift, do2D)]
@@ -266,6 +286,7 @@ def getSignalHist(proc,channel,**kwargs):
     return hist
 
 def getDatadrivenHist(proc,channel,**kwargs):
+    print "-----getDatadrivenHist..."
     shift = kwargs.pop('shift','')
     source = kwargs.pop('source','B')
     region = kwargs.pop('region','A')
@@ -281,16 +302,19 @@ def getDatadrivenHist(proc,channel,**kwargs):
 
     if 'TauMuTauE' in channel:
         desc = 'looseMuIso_tightEleId'
+    elif 'TauETauE' in channel:
+        desc = 'tightEleId_tightEleId'
     elif 'TauMuTauMu' in channel:
         desc = 'looseMuIso_looseMuIso'
     else:
         desc = 'MVAMedium'
-    
+
     sampleDir = baseDir+channeltext+'/'+yeartext+'/DataDriven/'
     filename = sampleDir + '{}_{}_{}_{}_{}.root'.format(channeltext, yeartext, desc, region, shift)
     #if proc == 'data' and region == 'signalRegion' and not 'TauMuTauE' in channel:
     if proc == 'data' and region == 'signalRegion':
-        filename=filename.replace('signalRegion', 'signalRegionUnblind').replace('_nominal', '')
+        filename = sampleDir + '{}_{}_{}_{}.root'.format(channeltext, yeartext, desc, region)
+        filename = filename.replace('signalRegion', 'signalRegionUnblind')
     hists = [getDataset(filename,channel,proc,shift, do2D)]
     hist = hists[0].Clone(name)
     return hist

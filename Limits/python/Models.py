@@ -38,7 +38,7 @@ class Model(object):
             hist = ROOT.RooDataHist(dhname, dhname, ROOT.RooArgList(ws.var(self.x)), hist)
         #self.build(ws,name)
         model = ws.pdf(name)
-       
+
         #ws.var('x').setRange('xRange', xFitRange[0], xFitRange[1])
         fr = model.fitTo(hist,ROOT.RooFit.Save(),ROOT.RooFit.SumW2Error(True),ROOT.RooFit.PrintLevel(-1))
         #fr = model.fitTo(hist,ROOT.RooFit.Save(),ROOT.RooFit.SumW2Error(True),ROOT.RooFit.Minos(True))
@@ -137,7 +137,7 @@ class Model(object):
 
     def fit2D(self,ws,hist,name,save=False,doErrors=False,saveDir='', xFitRange=[0,30], yFitRange=[0,30], logy=False, xRange=[], yRange=[]):
         '''Fit the model to a histogram and return the fit values'''
-        
+
         if isinstance(hist,ROOT.TH1):
             dhname = 'dh_{0}'.format(name)
             hist = ROOT.RooDataHist(dhname, dhname, ROOT.RooArgList(ws.var(self.x),ws.var(self.y)), hist)
@@ -155,7 +155,7 @@ class Model(object):
 
         fr = model.fitTo(hist,ROOT.RooFit.Minimizer("Minuit2", "Minos"), ROOT.RooFit.Save(),ROOT.RooFit.SumW2Error(True),ROOT.RooFit.PrintLevel(-1))
         #fr = model.fitTo(hist,ROOT.RooFit.Minimizer("GSLMultiMin", "conjugatefr"), ROOT.RooFit.Save(),ROOT.RooFit.SumW2Error(True),ROOT.RooFit.PrintLevel(3))
-        
+
         #fr = model.fitTo(hist,ROOT.RooFit.Save(),ROOT.RooFit.SumW2Error(True),ROOT.RooFit.Minos(True))
         pars = fr.floatParsFinal()
         vals = {}
@@ -228,7 +228,7 @@ class Model(object):
             #xFrame2.GetYaxis().SetNdivisions(505)
             #xFrame2.GetYaxis().SetTitleSize(0.05)
             prims = ratiopad.GetListOfPrimitives()
-            
+
             #print "==========Look Here============"
             #print prims
             for prim in prims:
@@ -261,7 +261,7 @@ class Model(object):
             #hist.Print('v')
             model.plotOn(yFrame)
             chi2Liney = "Chi2: " + str(yFrame.chiSquare()) # Adding chi2 info
-            pty = ROOT.TPaveText(.72,.1,.90,.2, "brNDC") # Adding chi2 info            
+            pty = ROOT.TPaveText(.72,.1,.90,.2, "brNDC") # Adding chi2 info
             pty.AddText(chi2Liney ) # Adding chi2 info
             model.paramOn(yFrame,ROOT.RooFit.Layout(0.72,0.98,0.90))
 
@@ -423,7 +423,7 @@ class ModelSpline(Model):
         return 1
 
     def buildIntegral(self,ws,label):
-        if not hasattr(self,'integrals'): return 
+        if not hasattr(self,'integrals'): return
         spline = buildSpline(ws,label,self.mh,self.masses,self.integrals)
         # import to workspace
         getattr(ws, "import")(spline, ROOT.RooFit.RecycleConflictNodes())
@@ -436,7 +436,7 @@ class Param(object):
 
     def build(self,ws,label):
         logging.debug('Building {}'.format(label))
-        paramName = '{}'.format(label) 
+        paramName = '{}'.format(label)
         value = self.kwargs.get('value', 0)
         vargs = self.kwargs.get('valueArgs',[])
         shifts = self.kwargs.get('shifts', {})
@@ -454,14 +454,19 @@ class Param(object):
         for shift in shifts:
             up = shifts[shift]['up']
             down = shifts[shift]['down']
-            if isinstance(value,basestring) or abs(up/value)>0.0 or abs(down/value)>0.0:
+            upratio = 0
+            dnratio = 0
+            if value != 0:
+                upratio = up/value
+                dnratio = down/value
+            if isinstance(value,basestring) or abs(upratio)>0.0 or abs(dnratio)>0.0:
                 ws.factory('{}[0,-10,10]'.format(shift))
                 if "integral" in paramName:
                     #shiftFormula += ''
                 #if False:
-                    shiftFormula += ' + TMath::Max(0,TMath::Exp(@{shift})-1)*({up}) + TMath::Min(0,TMath::Exp(@{shift})-1)*({down})'.format(shift=len(args),up=up,down=down)
+                    shiftFormula += ' + TMath::Max(Double_t(0),TMath::Exp(@{shift})-1)*({up}) + TMath::Min(Double_t(0),TMath::Exp(@{shift})-1)*({down})'.format(shift=len(args),up=up,down=down)
                 else:
-                    shiftFormula += ' + TMath::Max(0,@{shift})*({up}) + TMath::Min(0,@{shift})*({down})'.format(shift=len(args),up=up,down=down)
+                    shiftFormula += ' + TMath::Max(Double_t(0),@{shift})*({up}) + TMath::Min(Double_t(0),@{shift})*({down})'.format(shift=len(args),up=up,down=down)
                 args.Add(ws.var(shift))
         if uncertainty > 0:
         #if uncertainty > 0 and not 'lambda_conty' in paramName and not 'erf' in paramName:
@@ -477,14 +482,14 @@ class Param(object):
             if "integral" in paramName:
                 #shiftFormula += ''
             #if False:
-                shiftFormula += ' + TMath::Max(0,TMath::Exp(@{shift})-1)*({up}) + TMath::Min(0,TMath::Exp(@{shift})-1)*({down})'.format(shift=len(args),up=uncrt,down=uncrt)
+                shiftFormula += ' + TMath::Max(Double_t(0),TMath::Exp(@{shift})-1)*({up}) + TMath::Min(Double_t(0),TMath::Exp(@{shift})-1)*({down})'.format(shift=len(args),up=uncrt,down=uncrt)
             else:
                 #if 'erf' in paramName:
                 #    shiftFormula += ' + TMath::Max(0,@{shift})*({down}) + TMath::Min(0,@{shift})*({up})'.format(shift=len(args),up=uncrt,down=uncrt)
                 #else:
-                shiftFormula += ' + TMath::Max(0,@{shift})*({up}) + TMath::Min(0,@{shift})*({down})'.format(shift=len(args),up=uncrt,down=uncrt)
+                shiftFormula += ' + TMath::Max(Double_t(0),@{shift})*({up}) + TMath::Min(Double_t(0),@{shift})*({down})'.format(shift=len(args),up=uncrt,down=uncrt)
             args.Add(ws.var(uncrtTxt))
-        
+
         arglist = ROOT.RooArgList(args)
         param = ROOT.RooFormulaVar(paramName, paramName, shiftFormula, arglist)
         getattr(ws, "import")(param, ROOT.RooFit.RecycleConflictNodes())
@@ -531,16 +536,16 @@ class Spline(object):
                             shiftText = channel+'_'+shift
                         ws.factory('{}[0,-10,10]'.format(shiftText))
                         #ws.factory('{}[0,-10,10]'.format(shift))
-                        
+
                         splineUp   = buildSpline(ws,upName,  self.mh,masses,up)
                         splineDown = buildSpline(ws,downName,self.mh,masses,down)
-                        
+
                         #if 'integral' in splineName:
                         if False:
-                            shiftFormula += ' + TMath::Max(0,TMath::Exp(@{shift})-1)*({up}) + TMath::Min(0,TMath::Exp(@{shift})-1)*({down})'.format(shift=len(args),up=len(args)+1,down=len(args)+2)
+                            shiftFormula += ' + TMath::Max(Double_t(0),TMath::Exp(@{shift})-1)*({up}) + TMath::Min(Double_t(0),TMath::Exp(@{shift})-1)*({down})'.format(shift=len(args),up=len(args)+1,down=len(args)+2)
                         else:
-                            shiftFormula += ' + TMath::Max(0,@{shift})*@{up} + TMath::Min(0,@{shift})*@{down}'.format(shift=len(args),up=len(args)+1,down=len(args)+2)
-                        
+                            shiftFormula += ' + TMath::Max(Double_t(0),@{shift})*@{up} + TMath::Min(Double_t(0),@{shift})*@{down}'.format(shift=len(args),up=len(args)+1,down=len(args)+2)
+
                         #print "Building splines:", ws.var(shiftText)
                         args.Add(ws.var(shiftText))
                         args.Add(splineUp)
@@ -564,13 +569,13 @@ class Spline(object):
                     #if 'integral' in splineName or 'mean' in splineName or 'sigma' in splineName or 'width' in splineName:
                     #if 'integral' in splineName:
                     if False:
-                        shiftFormula += ' + TMath::Max(0,TMath::Exp(@{shift})-1)*({up}) + TMath::Min(0,TMath::Exp(@{shift})-1)*({down})'.format(shift=len(args),up=len(args)+1,down=len(args)+2)
+                        shiftFormula += ' + TMath::Max(Double_t(0),TMath::Exp(@{shift})-1)*({up}) + TMath::Min(Double_t(0),TMath::Exp(@{shift})-1)*({down})'.format(shift=len(args),up=len(args)+1,down=len(args)+2)
                     else:
-                        shiftFormula += ' + TMath::Max(0,@{shift})*@{up} + TMath::Min(0,@{shift})*@{down}'.format(shift=len(args),up=len(args)+1,down=len(args)+2)
+                        shiftFormula += ' + TMath::Max(Double_t(0),@{shift})*@{up} + TMath::Min(Double_t(0),@{shift})*@{down}'.format(shift=len(args),up=len(args)+1,down=len(args)+2)
                     args.Add(ws.var(shiftText))
                     args.Add(splineUp)
                     args.Add(splineDown)
-                
+
                 arglist = ROOT.RooArgList(args)
                 spline = ROOT.RooFormulaVar(splineName, splineName, shiftFormula, arglist)
             else:
@@ -595,7 +600,7 @@ class Spline(object):
                         down = c-d
                         if c and (abs(up/c)<uncertainty and abs(down/c)<uncertainty): continue
                         ws.factory('{}[0,-10,10]'.format(shift))
-                        shiftFormula += ' + TMath::Max(0,@{shift})*({up:g}) + TMath::Min(0,@{shift})*({down:g})'.format(shift=len(pargs),up=up,down=down)
+                        shiftFormula += ' + TMath::Max(Double_t(0),@{shift})*({up:g}) + TMath::Min(Double_t(0),@{shift})*({down:g})'.format(shift=len(pargs),up=up,down=down)
                         pargs.add(ws.var(shift))
                     pname = 'p{}_{}'.format(p,splineName)
                     pform = ROOT.RooFormulaVar(pname,pname,shiftFormula,pargs)
@@ -625,6 +630,37 @@ class Spline(object):
         else:
             spline = buildSpline(ws,splineName,self.mh,masses,values)
         getattr(ws, "import")(spline, ROOT.RooFit.RecycleConflictNodes())
+
+class Linear(Model):
+    def __init__(self,name,**kwargs):
+        super(Linear,self).__init__(name,**kwargs)
+
+    def build(self,ws,label):
+        logging.debug('Building {}'.format(label))
+        a = self.kwargs.get('a', [1,0,10])
+        b = self.kwargs.get('b', [0,-1,1])
+        aName = a if isinstance(a,str) else 'p0_{0}'.format(label)
+        bName = b if isinstance(b,str) else 'p1_{0}'.format(label)
+        if not isinstance(a,str): ws.factory('{0}[{1}, {2}, {3}]'.format(aName,*a))
+        if not isinstance(b,str): ws.factory('{0}[{1}, {2}, {3}]'.format(bName,*b))
+        #ws.factory("{0}[{1}, {2}, {3}]".format('p0',*a))
+        #ws.factory("{0}[{1}, {2}, {3}]".format('p1',*b))
+        ws.factory("Polynomial::{0}({1}, {{{2},{3}}})".format(label,self.x,aName,bName))
+        self.params = [aName,bName]
+
+class PowerLaw(Model):
+    def __init__(self,name,**kwargs):
+        super(PowerLaw,self).__init__(name,**kwargs)
+
+    def build(self,ws,label):
+        logging.debug('Building {}'.format(label))
+        alpha = self.kwargs.get('alpha', [-2,-10,0])
+        aName = alpha if isinstance(alpha,str) else 'p0_{0}'.format(label)
+        if not isinstance(alpha,str): ws.factory('{0}[{1}, {2}, {3}]'.format(aName,*alpha))
+        #ws.factory("{0}[{1}, {2}, {3}]".format('p0',*a))
+        #ws.factory("{0}[{1}, {2}, {3}]".format('p1',*b))
+        ws.factory("EXPR::{0}('TMath::Power({1}, {2})', {1}, {2})".format(label,self.x,aName))
+        self.params = [aName]
 
 class Polynomial(Model):
 
@@ -885,7 +921,7 @@ class DoubleCrystalBall(Model):
 
     def __init__(self,name,**kwargs):
         super(DoubleCrystalBall,self).__init__(name,**kwargs)
-        
+
 
     def build(self,ws,label):
         logging.debug('Building {}'.format(label))
@@ -894,7 +930,7 @@ class DoubleCrystalBall(Model):
         a1     = self.kwargs.get('a1', [1,0,100])
         n1     = self.kwargs.get('n1', [1,0,100])
         a2     = self.kwargs.get('a2', [1,0,100])
-        n2     = self.kwargs.get('n2', [1,0,100])    
+        n2     = self.kwargs.get('n2', [1,0,100])
         meanName  = mean if isinstance(mean,str) else 'mean_{0}'.format(label)
         sigmaName = sigma if isinstance(sigma,str) else 'sigma_{0}'.format(label)
         a1Name    = a1 if isinstance(a1,str) else 'a1_{0}'.format(label)
@@ -910,7 +946,7 @@ class DoubleCrystalBall(Model):
         if not isinstance(n2,str): ws.factory('{0}[{1}, {2}, {3}]'.format(n2Name,*n2))
 
         # build model
-        doubleCB = ROOT.DoubleCrystalBall(label, label, ws.arg(self.x), ws.arg(meanName), ws.arg(sigmaName), 
+        doubleCB = ROOT.DoubleCrystalBall(label, label, ws.arg(self.x), ws.arg(meanName), ws.arg(sigmaName),
                    ws.arg(a1Name), ws.arg(n1Name), ws.arg(a2Name), ws.arg(n2Name) )
         self.wsimport(ws, doubleCB)
         ws.importClassCode(label)
@@ -952,7 +988,7 @@ class DoubleCrystalBallSpline(ModelSpline):
         getattr(ws, "import")(n2Spline, ROOT.RooFit.RecycleConflictNodes())
 
         # build model
-        doubleCB = ROOT.DoubleCrystalBall(label, label, ws.arg(self.x), ws.arg(meanName), ws.arg(sigmaName), 
+        doubleCB = ROOT.DoubleCrystalBall(label, label, ws.arg(self.x), ws.arg(meanName), ws.arg(sigmaName),
                    ws.arg(a1Name), ws.arg(n1Name), ws.arg(a2Name), ws.arg(n2Name) )
         self.wsimport(ws, doubleCB)
         ws.importClassCode(label)
@@ -962,7 +998,7 @@ class DoubleSidedGaussian(Model):
 
     def __init__(self,name,**kwargs):
         super(DoubleSidedGaussian,self).__init__(name,**kwargs)
-        
+
 
     def build(self,ws,label):
         logging.debug('Building {}'.format(label))
@@ -1012,13 +1048,13 @@ class DoubleSidedGaussianSpline(ModelSpline):
         doubleG = ROOT.DoubleSidedGaussian(label, label, ws.arg(self.x), ws.arg(meanName), ws.arg(sigma1Name), ws.arg(sigma2Name), yMax )
         self.wsimport(ws, doubleG)
         ws.importClassCode(label)
-        self.params = [meanName,sigma1Name,sigma2Name] 
+        self.params = [meanName,sigma1Name,sigma2Name]
 
 class DoubleSidedVoigtian(Model):
 
     def __init__(self,name,**kwargs):
         super(DoubleSidedVoigtian,self).__init__(name,**kwargs)
-        
+
 
     def build(self,ws,label):
         logging.debug('Building {}'.format(label))
@@ -1058,7 +1094,7 @@ class DoubleSidedVoigtianSpline(ModelSpline):
         sigma1s = self.kwargs.get('sigma1s', [])
         sigma2s = self.kwargs.get('sigma2s', [])
         width1s = self.kwargs.get('width1s', [])
-        width2s = self.kwargs.get('width2s', [])  
+        width2s = self.kwargs.get('width2s', [])
         yMax    = self.kwargs.get('yMax')
         meanName   = 'mean_{0}'.format(label)
         sigma1Name = 'sigma1_{0}'.format(label)
@@ -1082,7 +1118,7 @@ class DoubleSidedVoigtianSpline(ModelSpline):
         doubleV = ROOT.DoubleSidedVoigtian(label, label, ws.arg(self.x), ws.arg(meanName), ws.arg(sigma1Name), ws.arg(sigma2Name), ws.arg(width1Name), ws.arg(width2Name), yMax )
         self.wsimport(ws, doubleV)
         ws.importClassCode(label)
-        self.params = [meanName,sigma1Name,sigma2Name,width1Name,width2Name] 
+        self.params = [meanName,sigma1Name,sigma2Name,width1Name,width2Name]
 
 class Exponential(Model):
 
@@ -1136,7 +1172,7 @@ class PolynomialExpr(Model):
         self.params = params
 
 class ExpoPoly(Model):
-    
+
     def __init__(self,name,**kwargs):
         super(ExpoPoly,self).__init__(name,**kwargs)
 
@@ -1193,10 +1229,10 @@ class Erf(Model):
         self.params = [erfScaleName,erfShiftName]
 
 class ErfSpline(ModelSpline):
-        
+
     def __init__(self,name,**kwargs):
         super(ErfSpline,self).__init__(name,**kwargs)
-    
+
     def build(self,ws,label):
         logging.debug('Building {}'.format(label))
         masses    = self.kwargs.get('masses', [])
@@ -1204,7 +1240,7 @@ class ErfSpline(ModelSpline):
         erfShifts = self.kwargs.get('erfShifts', [])
         erfScaleName = 'erfScale_{0}'.format(label)
         erfShiftName = 'erfShift_{0}'.format(label)
-        # splines  
+        # splines
         erfScaleSpline = buildSpline(ws,erfScaleName,self.mh,masses,erfScales)
         erfShiftSpline = buildSpline(ws,erfShiftName,self.mh,masses,erfShifts)
         # import
@@ -1234,16 +1270,16 @@ class MaxwellBoltzmann(Model):
         self.params = [scaleName]
 
 class MaxwellBoltzmannSpline(ModelSpline):
-        
+
     def __init__(self,name,**kwargs):
         super(MaxwellBoltzmannSpline,self).__init__(name,**kwargs)
-    
+
     def build(self,ws,label):
         logging.debug('Building {}'.format(label))
         masses    = self.kwargs.get('masses', [])
         scales = self.kwargs.get('scales',  [])
         scaleName = 'scale_{0}'.format(label)
-        # splines  
+        # splines
         scaleSpline = buildSpline(ws,scaleName,self.mh,masses,scales)
         # import
         getattr(ws, "import")(scaleSpline, ROOT.RooFit.RecycleConflictNodes())
@@ -1310,17 +1346,17 @@ class BetaConv(Model):
         print "Ploop"
         g.build(ws,'{}_gaus'.format(label))
         print "Pliip"
-        f = ROOT.RooFFTConvPdf(label,label,ws.var(self.x),ws.pdf('{}_beta'.format(label)),ws.pdf('{}_gaus'.format(label)),2) 
-        
-        #f = ROOT.RooNumConvPdf(label,label,ws.var(self.x),ws.pdf('{}_beta'.format(label)),ws.pdf('{}_gaus'.format(label))) 
+        f = ROOT.RooFFTConvPdf(label,label,ws.var(self.x),ws.pdf('{}_beta'.format(label)),ws.pdf('{}_gaus'.format(label)),2)
+
+        #f = ROOT.RooNumConvPdf(label,label,ws.var(self.x),ws.pdf('{}_beta'.format(label)),ws.pdf('{}_gaus'.format(label)))
         getattr(ws,'import')(f)
         self.params = [betaScaleName,betaAName,betaBName,meanName,sigmaName]
 
 class BetaSpline(ModelSpline):
-        
+
     def __init__(self,name,**kwargs):
         super(BetaSpline,self).__init__(name,**kwargs)
-    
+
     def build(self,ws,label):
         logging.debug('Building {}'.format(label))
         masses    = self.kwargs.get('masses', [])
@@ -1330,7 +1366,7 @@ class BetaSpline(ModelSpline):
         betaScaleName = 'betaScale_{0}'.format(label)
         betaAName = 'betaA_{0}'.format(label)
         betaBName = 'betaB_{0}'.format(label)
-        # splines  
+        # splines
         betaScaleSpline = buildSpline(ws,betaScaleName,self.mh,masses,betaScales)
         betaASpline = buildSpline(ws,betaAName,self.mh,masses,betaAs)
         betaBSpline = buildSpline(ws,betaBName,self.mh,masses,betaBs)
@@ -1365,10 +1401,10 @@ class Landau(Model):
         self.params = [muName,sigmaName]
 
 class LandauSpline(ModelSpline):
-        
+
     def __init__(self,name,**kwargs):
         super(LandauSpline,self).__init__(name,**kwargs)
-    
+
     def build(self,ws,label):
         logging.debug('Building {}'.format(label))
         masses    = self.kwargs.get('masses', [])
@@ -1376,7 +1412,7 @@ class LandauSpline(ModelSpline):
         sigmas    = self.kwargs.get('sigmas', [])
         muName    = 'mu_{0}'.format(label)
         sigmaName = 'sigma_{0}'.format(label)
-        # splines  
+        # splines
         muSpline    = buildSpline(ws,muName,self.mh,masses,mus)
         sigmaSpline = buildSpline(ws,sigmaName,self.mh,masses,sigmas)
         # import

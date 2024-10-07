@@ -101,3 +101,9 @@ ENV/
 .mypy_cache/
 
 __init__.py
+*.py~
+*.root
+*.txt
+*.pdf
+*.png
+log_*

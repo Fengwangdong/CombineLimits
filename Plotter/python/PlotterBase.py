@@ -26,7 +26,8 @@ class PlotterBase(object):
         self.analysis = analysis
         self.outputDirectory = kwargs.pop('outputDirectory','plots/{0}'.format(self.analysis))
         self.outputDirectoryCSV = kwargs.pop('outputDirectoryCSV','csvFiles/{0}'.format(self.analysis))
-        self.intLumi = kwargs.get('intLumi',float(getLumi()))
+        self.year = kwargs.pop('year','all')
+        self.intLumi = kwargs.get('intLumi',float(getLumi(self.year)))
         # initialize stuff
 
     def _getLegend(self,**kwargs):
