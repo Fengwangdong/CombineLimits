@@ -6,7 +6,7 @@ git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsA
 pushd HiggsAnalysis/CombinedLimit
 
 git fetch origin
-git checkout v8.2.0
+git checkout v9.2.1
 
 popd
 
@@ -14,3 +14,6 @@ popd
 git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
 
 popd
+
+scram b clean
+scram b -j4
