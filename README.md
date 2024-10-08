@@ -7,7 +7,7 @@ Standalone limits to run with combine in the CMSSW final state analysis framewor
 ssh YOURUSERNAME@lxplus8.cern.ch
 ```
 
-Add this line into your ``.bashrc`` of your lxplus:
+Add this line into your ``.bashrc`` in your lxplus root directory:
 ```
 export X509_USER_PROXY=$HOME/tmp/x509up
 ```
@@ -26,10 +26,16 @@ cd YOURWORKDIRECTORY
 setenv SCRAM_ARCH cc8_amd64_gcc9
 cmsrel CMSSW_11_3_4
 cd CMSSW_11_3_4/src
-cmsenv
+cmsenv # you need this each time when you relogin your lxplus terminal
 git cms-init
-git clone https://github.com/Fengwangdong/CombineLimits.git -b feng-branch
+git clone https://github.com/Fengwangdong/CombineLimits.git CombineLimitsRunII -b feng-branch
 ./CombineLimits/recipe/recipe.sh
+```
+
+## Update your setup and synchonize with the recent development
+```
+git fetch
+git pull
 ```
 
 ## Pref-fit and Produce datacards
@@ -51,7 +57,7 @@ And follow the instructions from the script. Your default order should be: first
 all the final states together.
 
 ## Run Asymptotic limits
-You may make a new directory called testLimits, and copy the datacard directory that the previous step created for you into this work directory.
+You may make a new directory called ``testLimits``, and copy the datacard directory that the previous step created for you into this work directory.
 Before submit condor jobs, you should test one asymptotic limit using this script, NOTE that you need to modify the path in this script to your 
 working directory path before running it as below:
 ```
@@ -78,3 +84,17 @@ bash run_plot.sh # Follow the instruction to provide the arguments for this scri
 
 It will create a directory for you to collect limit plots: ``plots/Limits/pdf/haa/`` 
 Among the sub-directories, you can find the relevant plots eg:  ``*br_log.pdf`` 
+
+## Produce Post-fit plots for paper
+You may make a new directory called ``testPostFit`` in the ``CombineLimitsRunII/HaaLimits/python/``, and copy your datacard directory into this new directory as well. Then you need to run impacts and create log files:
+
+```
+csh run_impacts.csh # Follow the instructions to provide the arguments for this script like final state, era, H mass etc.
+```
+This will create a sub-directory called "Impacts_BlaBla".
+
+Then you can direct to the postfit plotting directory:
+```
+cd CombineLimitsRunII/Plotter/python/
+sh run_plot.sh # Follow the instruction to provide the arguments for this script like the final state, era, H mass etc.
+```

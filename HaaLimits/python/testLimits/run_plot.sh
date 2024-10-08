@@ -6,8 +6,6 @@ then
     exit 1
 fi
 
-export HMASS=$1
-
 if [ -z $2 ]
 then
     echo "Please specify correct final state! eg: tt, mt, me, et, all"
