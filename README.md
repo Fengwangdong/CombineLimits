@@ -70,7 +70,7 @@ mkdir condorOut # This directory will contain the output files from condor jobs 
 
 sh submit_condor_lxplus.sh # Follow the instruction when you are running this script to provide the proper arguments
 ```
-
+You can monitor the job status using ``condor_q``.
 You may check the files named ``*.stderr`` which contains error information of each job (if failed), and check the files named ``*.stdout`` which 
 contains the output (also limits) of the job (ONLY if succeeded).
 
