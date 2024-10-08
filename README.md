@@ -29,7 +29,7 @@ cd CMSSW_11_3_4/src
 cmsenv # you need this each time when you relogin your lxplus terminal
 git cms-init
 git clone https://github.com/Fengwangdong/CombineLimits.git CombineLimitsRunII -b feng-branch
-./CombineLimits/recipe/recipe.sh
+./CombineLimitsRunII/recipe/recipe.sh
 ```
 
 ## Update your setup and synchonize with the recent development
@@ -98,3 +98,6 @@ Then you can direct to the postfit plotting directory:
 cd CombineLimitsRunII/Plotter/python/
 sh run_plot.sh # Follow the instruction to provide the arguments for this script like the final state, era, H mass etc.
 ```
+
+This  ``run_plot.sh`` dispatches the correspond python script for each final state. After it finishes, you will find the ``*.pdf`` files of the 
+post-fit plots in your working directory.
