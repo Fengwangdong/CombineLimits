@@ -58,13 +58,14 @@ all the final states together.
 
 ## Run Asymptotic limits
 You may make a new directory called ``testLimits``, and copy the datacard directory that the previous step created for you into this work directory.
-Before submit condor jobs, you should test one asymptotic limit using this script, NOTE that you need to modify the path in this script to your 
+Before submit condor jobs, you should test one asymptotic limit using this script below. NOTE that you need to modify the path in this script to your 
 working directory path before running it as below:
 ```
 bash test_example.sh
 ```
 
-If it works well, you can prepare to submit condor jobs:
+If it works well, you can prepare to submit condor jobs. Before submitting jobs, you need to modify the path written in this script ``run_condor_lxplus.sh``. The default path is Feng's lxplus working directory, but you should modify it to yours. Meanwhile, make sure your datacard 
+directory is also ready in your working directory. After these, you can submit condor jobs:
 ```
 mkdir condorOut # This directory will contain the output files from condor jobs for you to inspect if there is any problem
 
