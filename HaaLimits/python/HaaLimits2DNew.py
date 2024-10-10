@@ -223,7 +223,8 @@ class HaaLimits2D(HaaLimits):
                     erfScale = kwargs.pop('erfScale_{}'.format(nameE1), [0.05,0,0.2]), #high mass region for tt channel 2017
                     #erfScale = kwargs.pop('erfScale_{}'.format(nameE1), [0.05,0,0.2]), #others
                     #erfShift = kwargs.pop('erfShift_{}'.format(nameE1), [90,80,95]),# high mass region for tt channel
-                    erfShift = kwargs.pop('erfShift_{}'.format(nameE1), [85,80,90]), #others
+                    #erfShift = kwargs.pop('erfShift_{}'.format(nameE1), [85,90,95]), #others
+                    erfShift = kwargs.pop('erfShift_{}'.format(nameE1), [80,70,100]), #others
                 )
                 erf1.build(workspace,nameE1)
 
@@ -248,6 +249,13 @@ class HaaLimits2D(HaaLimits):
                     nameC1,
                 )
                 nameB1 = 'bg1{}'.format('_'+tag if tag else '')
+
+                if (self.YRANGE[1] == 1200 or self.YRANGE[0] >= 130):
+                    bg1 = Models.Exponential('bg1',
+                        x = yVar,
+                        lamb = kwargs.pop('lambda_{}'.format(nameC1), [-0.01,-0.04,0]),
+                    )
+
                 bg1.build(workspace,nameB1)
 
                 #nameE2 = 'erf2{}'.format('_'+tag if tag else '')
@@ -273,13 +281,14 @@ class HaaLimits2D(HaaLimits):
                 #nameB2 = 'bg2{}'.format('_'+tag if tag else '')
                 #bg2.build(workspace,nameB2)
 
-                bg = Models.Sum('bg',
-                    **{
-                        nameB1: [0.9,0,1],
-                        #nameB2: [0.1,0,1],
-                        'recursive': True,
-                    }
-                )
+                bg = bg1
+                #bg = Models.Sum('bg',
+                #    **{
+                #        nameB1: [0.9,0,1],
+                #        #nameB2: [0.1,0,1],
+                #        'recursive': True,
+                #    }
+                #)
             elif self.LANDAU:
                 ## landua plus upsilon gaussian
                 nameL1 = 'land{}'.format('_'+tag if tag else '')
