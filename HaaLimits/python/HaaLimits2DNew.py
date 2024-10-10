@@ -221,10 +221,8 @@ class HaaLimits2D(HaaLimits):
                 erf1 = Models.Erf('erf1',
                     x = yVar,
                     erfScale = kwargs.pop('erfScale_{}'.format(nameE1), [0.05,0,0.2]), #high mass region for tt channel 2017
-                    #erfScale = kwargs.pop('erfScale_{}'.format(nameE1), [0.05,0,0.2]), #others
-                    #erfShift = kwargs.pop('erfShift_{}'.format(nameE1), [90,80,95]),# high mass region for tt channel
                     #erfShift = kwargs.pop('erfShift_{}'.format(nameE1), [85,90,95]), #others
-                    erfShift = kwargs.pop('erfShift_{}'.format(nameE1), [80,70,100]), #others
+                    erfShift = kwargs.pop('erfShift_{}'.format(nameE1), [85,80,90]), #others
                 )
                 erf1.build(workspace,nameE1)
 

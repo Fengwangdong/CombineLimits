@@ -47,7 +47,7 @@ csh run_fit.csh
 
 You will find the pre-fit plots in the directory of ``figures/HaaLimits2D_unbinned_h/``, which can be downloaded and inspected for the fit quality. 
 Some parameters may show anomalously huge uncertainty, most likely to be associated with M(mmtt). You will have to tune the fit constaints in 
-this file: ``HaaLimits2DNew.py`` (Line 226 and 234). Then this step has to be redone for the specific region, final state, era or H mass.
+this file: ``HaaLimits2DNew.py`` [Line 225](https://github.com/Fengwangdong/CombineLimits/blob/feng-branch/HaaLimits/python/HaaLimits2DNew.py#L225) or [Line 233](https://github.com/Fengwangdong/CombineLimits/blob/feng-branch/HaaLimits/python/HaaLimits2DNew.py#L233). Then this step has to be redone for the specific region, final state, era or H mass.
 
 The datacard can be found in ``datacards_shape/MuMuTauTau``. If you need to combine datacards, you can use this script:
 ```
@@ -72,7 +72,7 @@ mkdir condorOut # This directory will contain the output files from condor jobs 
 sh submit_condor_lxplus.sh # Follow the instruction when you are running this script to provide the proper arguments
 ```
 You can monitor the job status using ``condor_q``.
-You may check the files named ``*.stderr`` which contains error information of each job (if failed), and check the files named ``*.stdout`` which 
+You may check the files named ``condorOut/*.stderr`` which contains error information of each job (if failed), and check the files named ``condorOut/*.stdout`` which 
 contains the output (also limits) of the job (ONLY if succeeded).
 
 If success, you have find the output limit files in these directories below:
@@ -84,7 +84,7 @@ bash run_plot.sh # Follow the instruction to provide the arguments for this scri
 ```
 
 It will create a directory for you to collect limit plots: ``plots/Limits/pdf/haa/`` 
-Among the sub-directories, you can find the relevant plots eg:  ``*br_log.pdf`` 
+Among the sub-directories, you can find the relevant plots eg:  ``*br_smooth.pdf`` 
 
 ## Produce Post-fit plots for paper
 You may make a new directory called ``testPostFit`` in the ``CombineLimitsRunII/HaaLimits/python/``, and copy your datacard directory into this new directory as well. Then you need to run impacts and create log files:
@@ -92,7 +92,7 @@ You may make a new directory called ``testPostFit`` in the ``CombineLimitsRunII/
 ```
 csh run_impacts.csh # Follow the instructions to provide the arguments for this script like final state, era, H mass etc.
 ```
-This will create a sub-directory called "Impacts_BlaBla".
+This will create a sub-directory called ``Impacts_BlaBla``.
 
 Then you can direct to the postfit plotting directory:
 ```
