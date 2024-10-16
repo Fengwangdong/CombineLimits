@@ -102,3 +102,37 @@ sh run_plot.sh # Follow the instruction to provide the arguments for this script
 
 This  ``run_plot.sh`` dispatches the correspond python script for each final state. After it finishes, you will find the ``*.pdf`` files of the 
 post-fit plots in your working directory.
+
+## Run full-CLs limits
+You may make a new directory called ``testCLs``, and copy the datacard directory that the previous step created for you into this work directory.
+Before submit condor jobs, you should test one full-CLs limit using this script below. NOTE that you need to modify the path in this script to your 
+working directory path before running it as below:
+```
+bash test_example.sh
+```
+
+If it works well, you can prepare to submit condor jobs. Before submitting jobs, you need to modify the path written in these scripts ``runCLs_*.sh``. The default path is Feng's lxplus working directory, but you should modify it to yours. Meanwhile, make sure your datacard 
+directory is also ready in your working directory. After these, you can submit condor jobs:
+```
+mkdir condorOut # This directory will contain the output files from condor jobs for you to inspect if there is any problem
+
+sh submit_condor_lxplus.sh # Follow the instruction when you are running this script to provide the proper arguments
+```
+
+Note that there are six groups of ``runrunCLs_*.sh`` and ``condor_*.sub`` corresponding to the expected ``r`` with different confidence levels or observed ``r``. 
+You can monitor the job status using ``condor_q``.
+You may check the files named ``condorOut/*.stderr`` which contains error information of each job (if failed), and check the files named ``condorOut/*.stdout`` which 
+contains the output (also limits) of the job (ONLY if succeeded).
+
+If success, you have find the output limit files in these directories below:
+``H125``, ``H250``, ``H500``, ``H750``, ``H1000``.
+
+Then you will need to merge the output root files with different toy seeds into one.
+
+To produce the upper limit plots, this script does the work for you:  ``plot_limit_haa_multi.py`` You can dispatch it with another script:
+```
+bash run_plot.sh # Follow the instruction to provide the arguments for this script like final state, era, H mass etc.
+```
+
+It will create a directory for you to collect limit plots: ``plots/Limits/pdf/haa/`` 
+Among the sub-directories, you can find the relevant plots eg:  ``*br_smooth.pdf`` 

@@ -1,0 +1,12 @@
+universe = vanilla
+executable = runCLs_025.sh
+Output = ./condorOut/condor_$ENV(PREFIX)_h$ENV(HMASS)_ma$ENV(AMASS)_$ENV(MREGION)_$ENV(CHANNEL)_$ENV(WP)_$ENV(TFUNC)_025.stdout
+Error = ./condorOut/condor_$ENV(PREFIX)_h$ENV(HMASS)_ma$ENV(AMASS)_$ENV(MREGION)_$ENV(CHANNEL)_$ENV(WP)_$ENV(TFUNC)_025.stderr
+Log = ./condorOut/condor_$ENV(HMASS)_h$ENV(HMASS)_ma$ENV(AMASS)_$ENV(MREGION)_$ENV(CHANNEL)_$ENV(WP)_$ENV(TFUNC)_025.log
+Arguments = $ENV(HMASS) $ENV(AMASS) datacards_shape/MuMuTauTau/$ENV(PREFIX)_$ENV(MREGION)_H$ENV(HMASS)_$ENV(CHANNEL)_$ENV(WP)_$ENV(TFUNC)_hm$ENV(HMASS)_amX.txt $ENV(PREFIX)_m$ENV(HMASS)_ma$ENV(AMASS)_$ENV(MREGION)_$ENV(CHANNEL)_$ENV(WP)_$ENV(TFUNC) higgsCombine$ENV(PREFIX)_m$ENV(HMASS)_ma$ENV(AMASS)_$ENV(MREGION)_$ENV(CHANNEL)_$ENV(WP)_$ENV(TFUNC).HybridNew.mH$ENV(HMASS)
++JobFlavour  = "nextweek"
+RequestCpus = 4
+x509userproxy = $ENV(X509_USER_PROXY)
+use_x509userproxy = True
++ApptainerImage = "/cvmfs/singularity.opensciencegrid.org/cmssw/cms:rhel8"
+queue 1
