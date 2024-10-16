@@ -251,11 +251,12 @@ class HaaLimits(Limits):
 
         # upsilon
         nameU1b = 'upsilon1S_'+year
-        workspace.factory('{0}[{1}, {2}, {3}]'.format('mean_{}'.format(nameU1b), *[9.45,9.4,9.5]))
+        workspace.factory('{0}[{1}, {2}, {3}]'.format('mean_{}'.format(nameU1b), *[9.45,9.4,9.54]))
+        #workspace.factory('{0}[{1}, {2}, {3}]'.format('mean_{}'.format(nameU1b), *[9.45,9.4,9.5]))
         workspace.factory('{0}[{1}, {2}, {3}]'.format('sigma_{}'.format(nameU1b),*[0.05,0.01,0.2]))
         #workspace.factory('{0}[{1}, {2}, {3}]'.format('sigma_{}'.format(nameU1b),*[0.05,0,0.3]))
-        workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU1b),*[0.05,0.01,0.2]))
-        #workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU1b),*[0.2,0.01,0.5]))
+        #workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU1b),*[0.05,0.01,0.2]))
+        workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU1b),*[0.2,0.01,0.5]))
         workspace.factory('{0}[{1}, {2}, {3}]'.format('a_{}'.format( nameU1b),*[2,0.001,10]))
         workspace.factory('{0}[{1}, {2}, {3}]'.format('n_{}'.format( nameU1b),*[2,0.001,20]))
         workspace.factory('{0}[{1}, {2}, {3}]'.format('a1_{}'.format(nameU1b),*[2,0.001,10]))
@@ -279,11 +280,11 @@ class HaaLimits(Limits):
         print  "nameU1", nameU1
 
         nameU2b = 'upsilon2S_'+year
-        workspace.factory('{0}[{1}, {2}, {3}]'.format('mean_{}'.format(nameU2b), *[10,9.9,10.1]))
+        workspace.factory('{0}[{1}, {2}, {3}]'.format('mean_{}'.format(nameU2b), *[10.,9.9,10.1]))
         workspace.factory('{0}[{1}, {2}, {3}]'.format('sigma_{}'.format(nameU2b),*[0.05,0.01,0.2]))
         #workspace.factory('{0}[{1}, {2}, {3}]'.format('sigma_{}'.format(nameU2b),*[0.01,0,0.1]))
-        workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU2b),*[0.05,0.01,0.2]))
-        #workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU2b),*[0.2,0,0.5]))
+        #workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU2b),*[0.05,0.01,0.2]))
+        workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU2b),*[0.2,0,0.5]))
         workspace.factory('{0}[{1}, {2}, {3}]'.format('a_{}'.format( nameU2b),*[2,0.001,10]))
         workspace.factory('{0}[{1}, {2}, {3}]'.format('n_{}'.format( nameU2b),*[2,0.001,20]))
         workspace.factory('{0}[{1}, {2}, {3}]'.format('a1_{}'.format(nameU2b),*[2,0.001,10]))
@@ -307,10 +308,12 @@ class HaaLimits(Limits):
         print "nameU2", nameU2
 
         nameU3b = 'upsilon3S_'+year
-        workspace.factory('{0}[{1}, {2}, {3}]'.format('mean_{}'.format(nameU3b), *[10.35,10.3,10.4]))
-        workspace.factory('{0}[{1}, {2}, {3}]'.format('sigma_{}'.format(nameU3b),*[0.05,0.01,0.2]))
-        workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU3b),*[0.05,0.01,0.2]))
-        #workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU3b),*[0.2,0.0,0.3]))
+        #workspace.factory('{0}[{1}, {2}, {3}]'.format('mean_{}'.format(nameU3b), *[10.35,10.3,10.4]))
+        #workspace.factory('{0}[{1}, {2}, {3}]'.format('sigma_{}'.format(nameU3b),*[0.05,0.01,0.2]))
+        #workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU3b),*[0.05,0.01,0.2]))
+        workspace.factory('{0}[{1}, {2}, {3}]'.format('mean_{}'.format(nameU3b), *[10.3,10.25,10.35]))
+        workspace.factory('{0}[{1}, {2}, {3}]'.format('sigma_{}'.format(nameU3b),*[0.01,0,0.1]))
+        workspace.factory('{0}[{1}, {2}, {3}]'.format('width_{}'.format(nameU3b),*[0.2,0.0,0.3]))
         workspace.factory('{0}[{1}, {2}, {3}]'.format('a_{}'.format( nameU3b),*[2,0.001,10]))
         workspace.factory('{0}[{1}, {2}, {3}]'.format('n_{}'.format( nameU3b),*[2,0.001,20]))
         workspace.factory('{0}[{1}, {2}, {3}]'.format('a1_{}'.format(nameU3b),*[2,0.001,10]))
@@ -348,8 +351,10 @@ class HaaLimits(Limits):
         #    nameU23 = '{}{}'.format(nameU23b,'_'+tag.replace('_2016','').replace('_2017','').replace('_2018','') if tag else '')
         #else:
         nameU23 = '{}{}'.format(nameU23b.replace('_2016','').replace('_2017','').replace('_2018',''),'_'+tag if tag else '')
-        workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU2b,*[0.5,0,0.5]))
-        workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU3b,*[0.5,0,0.5]))
+        workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU2b,*[0.5,0,1]))
+        workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU3b,*[0.5,0,1]))
+        #workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU2b,*[0.5,0,0.5]))
+        #workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU3b,*[0.5,0,0.5]))
         #upsilon23 = {'extended': True}
         upsilon23 = {'recursive': True}
         upsilon23[nameU2] = '{}_frac'.format(nameU2b)
@@ -363,8 +368,10 @@ class HaaLimits(Limits):
         #    nameU = '{}{}'.format(nameUb,'_'+tag.replace('_2016','').replace('_2017','').replace('_2018','') if tag else '')
         #else:
         nameU = '{}{}'.format(nameUb.replace('_2016','').replace('_2017','').replace('_2018',''),'_'+tag if tag else '')
-        workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU1b,*[0.5,0,0.5]))
-        workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU23b,*[0.5,0,0.5]))
+        #workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU1b,*[0.75,0,1]))
+        #workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU23b,*[0.5,0,1]))
+        workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU1b,*[0.5,0.3,1]))
+        workspace.factory('{0}_frac[{1},{2},{3}]'.format(nameU23b,*[0.5,0.3,1]))
         #upsilon = {'extended': True}
         upsilon = {'recursive': True}
         upsilon[nameU1]  = '{}_frac'.format(nameU1b)
@@ -400,7 +407,8 @@ class HaaLimits(Limits):
             nameC2 = 'cont2_{}'.format(tag if tag else '')
             cont2 = Models.Exponential(nameC2,
                                        x = xVar,
-                                       lamb = kwargs.pop('lambda_{}'.format(nameC2),[0.1,-0.1,0]), #-0.6,-2,0
+                                       lamb = kwargs.pop('lambda_{}'.format(nameC2),[0.1,-0.1,0.2]), #-0.6,-2,0
+                                       #lamb = kwargs.pop('lambda_{}'.format(nameC2),[0.1,-0.1,0]), #-0.6,-2,0
             )
 
             cont2.build(workspace,nameC2)
@@ -453,7 +461,7 @@ class HaaLimits(Limits):
             nameC = 'cont_{}'.format(tag if tag else '')
             cont = Models.Exponential(nameC,
                                       x = xVar,
-                                      lamb = kwargs.pop('lambda_{}'.format(nameC),[-1,-4,0]), #-2,-4,0
+                                      lamb = kwargs.pop('lambda_{}'.format(nameC),[-0.1,-0.2,0]), #-1,-4,0
                                       )
             cont.build(workspace,nameC)
 

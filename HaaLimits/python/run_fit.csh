@@ -64,9 +64,19 @@ if ($region == "lowmass") then
 else if ($region == "upsilon") then
    setenv xrangeMin 8
    setenv xrangeMax 12
+   if ($channel == "TauETauHad") then
+       setenv xrangeMin 10
+   endif
 else if ($region == "highmass") then
    setenv xrangeMin 12
    setenv xrangeMax 30
+   if ($channel == "TauETauHad" && $hmass == "500") then
+       setenv xrangeMin 14
+   else if ($channel == "TauETauHad" && $hmass == "750") then
+       setenv xrangeMin 18
+   else if ($channel == "TauETauHad" && $hmass == "1000") then
+       setenv xrangeMin 20
+   endif
 else if ($region == "highmass2") then
    setenv xrangeMin 30
    setenv xrangeMax 50

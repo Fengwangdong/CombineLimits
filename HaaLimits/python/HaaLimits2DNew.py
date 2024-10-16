@@ -230,7 +230,7 @@ class HaaLimits2D(HaaLimits):
                 cont1 = Models.Exponential('conty1',
                     x = yVar,
                     #lamb = kwargs.pop('lambda_{}'.format(nameC1), [-0.01,-0.025,0]), #others
-                    lamb = kwargs.pop('lambda_{}'.format(nameC1), [-0.01,-0.04,0]), #others
+                    lamb = kwargs.pop('lambda_{}'.format(nameC1), [-0.01,-0.02,0]), #others
                     #lamb = kwargs.pop('lambda_{}'.format(nameC1), [-0.005,-0.01,0]), #highmass tt 2017
                 )
                 cont1.build(workspace,nameC1)
@@ -248,10 +248,10 @@ class HaaLimits2D(HaaLimits):
                 )
                 nameB1 = 'bg1{}'.format('_'+tag if tag else '')
 
-                if (self.YRANGE[1] == 1200 or self.YRANGE[0] >= 130):
+                if (self.YRANGE[1] == 1200 or self.YRANGE[0] >= 130 or "TauMuTauHad" in region or "TauMuTauE" in region or "TauETauHad" in region):
                     bg1 = Models.Exponential('bg1',
                         x = yVar,
-                        lamb = kwargs.pop('lambda_{}'.format(nameC1), [-0.01,-0.04,0]),
+                        lamb = kwargs.pop('lambda_{}'.format(nameC1), [-0.01,-0.02,0]),
                     )
 
                 bg1.build(workspace,nameB1)
