@@ -42,10 +42,27 @@ if ($1 != 'all') then
 
 else
     ### combine all channels
+    foreach region (lowmass upsilon highmass highmass2)
+        foreach hm (125 250 500 750 1000)
+        ### combine same channel different years
+            if (($region == highmass2) && ($hm == 125 || $hm == 250 || $hm == 500 || $hm == 750)) then
+                continue
 
-    combineCards.py --xc=control_2016 --xc=control_2017 --xc=control_2018 ${prefix}_${region}_H${hm}_TauMuTauE_2016_2017_2018_looseMuIso_tightEleId_DG_DoubleExpo_Spline_wFakeTauScale_hm${hm}_amX.txt ${prefix}_${region}_H${hm}_TauETauHad_2016_2017_2018_MVAMedium_DG_DoubleExpo_Spline_wFakeTauScale_hm${hm}_amX.txt ${prefix}_${region}_H${hm}_TauMuTauHad_V2_2016_2017_2018_MVAMedium_DG_DoubleExpo_yRange_wFakeTauScale_hm${hm}_amX.txt > card.tmp
-    combineCards.py card.tmp ${prefix}_${region}_H${hm}_TauHadTauHad_V3_2016_2017_2018_MVAMedium_DG_DoubleExpo_yRange_Spline_wFakeTauScaleJEC_hm${hm}_amX.txt > ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt.tmp
-    sed 's/ch1_//g' ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt.tmp | sed 's/ch2_//g' | sed 's/ch3_//g' | sed 's/ch4_//g' | sed 's/ch5_//g' > ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt
-    rm -rf ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt.tmp
-    rm -rf card.tmp
+            else if ($region == lowmass || $region == upsilon && ($hm == 500 || $hm == 750 || $hm == 1000) || $region == highmass && $hm == 1000) then
+            #else if ($region == lowmass || $region == upsilon && ($hm == 500 || $hm == 750 || $hm == 1000)) then
+                combineCards.py --xc=control_2016 --xc=control_2017 --xc=control_2018 ${prefix}_${region}_H${hm}_TauMuTauE_2016_2017_2018_looseMuIso_tightEleId_DG_DoubleExpo_Spline_wFakeTauScale_hm${hm}_amX.txt ${prefix}_${region}_H${hm}_TauMuTauHad_V2_2016_2017_2018_MVAMedium_DG_DoubleExpo_yRange_wFakeTauScale_hm${hm}_amX.txt > card.tmp
+                combineCards.py card.tmp ${prefix}_${region}_H${hm}_TauHadTauHad_V3_2016_2017_2018_MVAMedium_DG_DoubleExpo_yRange_Spline_wFakeTauScaleJEC_hm${hm}_amX.txt > ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt.tmp
+                sed 's/ch1_//g' ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt.tmp | sed 's/ch2_//g' | sed 's/ch3_//g' | sed 's/ch4_//g' | sed 's/ch5_//g' > ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt
+                rm -rf ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt.tmp
+                rm -rf card.tmp
+            
+            else
+                combineCards.py --xc=control_2016 --xc=control_2017 --xc=control_2018 ${prefix}_${region}_H${hm}_TauMuTauE_2016_2017_2018_looseMuIso_tightEleId_DG_DoubleExpo_Spline_wFakeTauScale_hm${hm}_amX.txt ${prefix}_${region}_H${hm}_TauETauHad_2016_2017_2018_MVAMedium_DG_DoubleExpo_Spline_wFakeTauScale_hm${hm}_amX.txt ${prefix}_${region}_H${hm}_TauMuTauHad_V2_2016_2017_2018_MVAMedium_DG_DoubleExpo_yRange_wFakeTauScale_hm${hm}_amX.txt > card.tmp
+                combineCards.py card.tmp ${prefix}_${region}_H${hm}_TauHadTauHad_V3_2016_2017_2018_MVAMedium_DG_DoubleExpo_yRange_Spline_wFakeTauScaleJEC_hm${hm}_amX.txt > ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt.tmp
+                sed 's/ch1_//g' ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt.tmp | sed 's/ch2_//g' | sed 's/ch3_//g' | sed 's/ch4_//g' | sed 's/ch5_//g' > ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt
+                rm -rf ${prefix}_${region}_H${hm}_allchs_2016_2017_2018_MVAMedium_DG_wFakeTauScaleFit_hm${hm}_amX.txt.tmp
+                rm -rf card.tmp
+            endif
+        end
+    end
 endif
