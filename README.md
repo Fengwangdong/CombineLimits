@@ -127,12 +127,10 @@ contains the output (also limits) of the job (ONLY if succeeded).
 If success, you have find the output limit files in these directories below:
 ``H125``, ``H250``, ``H500``, ``H750``, ``H1000``.
 
-Then you will need to merge the output root files with different toy seeds into one.
-
 To produce the upper limit plots, this script does the work for you:  ``plot_limit_haa_multi.py`` You can dispatch it with another script:
 ```
 bash run_plot.sh # Follow the instruction to provide the arguments for this script like final state, era, H mass etc.
 ```
 
-It will create a directory for you to collect limit plots: ``plots/Limits/pdf/haa/`` 
+It will create a directory for you to collect limit plots: ``plots/Limits/pdf/haa-grid/`` 
 Among the sub-directories, you can find the relevant plots eg:  ``*br_smooth.pdf`` 
