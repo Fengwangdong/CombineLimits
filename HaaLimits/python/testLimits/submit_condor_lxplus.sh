@@ -165,7 +165,7 @@ then
         if
             [ $state = "TauETauHad" ] 
         then
-            export AMASSES=`seq 20 1.0 30`
+            export AMASSES=`seq 22 1.0 30`
         fi
     fi
 
