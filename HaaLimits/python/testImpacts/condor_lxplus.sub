@@ -1,0 +1,12 @@
+universe = vanilla
+executable = run_impacts.csh
+Output = ./condorOut/condor_$ENV(PREFIX)_h$ENV(HMASS)_ma$ENV(AMASS)_$ENV(MREGION)_$ENV(CHANNEL)_$ENV(YEAR).stdout
+Error = ./condorOut/condor_$ENV(PREFIX)_h$ENV(HMASS)_ma$ENV(AMASS)_$ENV(MREGION)_$ENV(CHANNEL)_$ENV(YEAR).stderr
+Log = ./condorOut/condor_$ENV(PREFIX)_h$ENV(HMASS)_ma$ENV(AMASS)_$ENV(MREGION)_$ENV(CHANNEL)_$ENV(YEAR).log
+Arguments = $ENV(HMASS) $ENV(CHANNEL) $ENV(YEAR) $ENV(MREGION) $ENV(AMASS) 
++JobFlavour  = "testmatch"
+RequestCpus = 4
+x509userproxy = $ENV(X509_USER_PROXY)
+use_x509userproxy = True
++ApptainerImage = "/cvmfs/singularity.opensciencegrid.org/cmssw/cms:rhel8"
+queue 1
