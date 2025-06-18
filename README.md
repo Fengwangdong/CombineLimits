@@ -70,7 +70,7 @@ bash submit_condor_lxplus.sh # Follow the instruction when you are running this 
 ```
 You can monitor the job status using ``condor_q``. These jobs will create a work sub-directory for each entity (mass, channel, region, etc).
 You may check the files named ``condorOut/*.stderr`` which contains error information of each job (if failed), and check the files named ``condorOut/*.stdout`` which 
-contains the output (also limits) of the job (ONLY if succeeded).
+contains the output (signal strength) of the job (ONLY if succeeded).
 After the condor jobs are completed, you can harvest the impact plots (``impacts_BlaBla.pdf``) in each sub-directory. 
 
 ## Run Asymptotic limits
