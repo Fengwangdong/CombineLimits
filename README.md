@@ -38,7 +38,7 @@ git fetch
 git pull
 ```
 
-## Pref-fit and Produce datacards
+## Pre-fit and Produce datacards
 To produce prefit plots and datacards, follow the instruction when you run the script below (you will be directed to type in arguments inclusing H mass, final state, era, and M(mm) region): 
 ```
 cd CombineLimitsRunII/HaaLimits/python/
@@ -55,6 +55,23 @@ csh run_combine.csh
 ```
 And follow the instructions from the script. Your default order should be: first combine 3 years' datacards for each final state, second combine 
 all the final states together.
+
+## Run Impacts in mass
+When you need to check the impacts of multiple masses, it is useful to produce them in batch with condor. This function is provided as below.
+```
+cd testImpacts
+```
+You need to modify the ``run_impacts.csh`` to replace the work directory path in the first few lines with yours. You should also copy your datacard directory into this 
+work directory. Then you can run this script:
+```
+mkdir condorOut # This directory will contain the output files from condor jobs for you to inspect if there is any problem
+
+bash submit_condor_lxplus.sh # Follow the instruction when you are running this script to provide the proper arguments
+```
+You can monitor the job status using ``condor_q``. These jobs will create a work sub-directory for each entity (mass, channel, region, etc).
+You may check the files named ``condorOut/*.stderr`` which contains error information of each job (if failed), and check the files named ``condorOut/*.stdout`` which 
+contains the output (also limits) of the job (ONLY if succeeded).
+After the condor jobs are completed, you can harvest the impact plots (``impacts_BlaBla.pdf``) in each sub-directory. 
 
 ## Run Asymptotic limits
 You may make a new directory called ``testLimits``, and copy the datacard directory that the previous step created for you into this work directory.
