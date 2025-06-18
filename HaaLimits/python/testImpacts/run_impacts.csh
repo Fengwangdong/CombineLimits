@@ -103,11 +103,11 @@ mkdir datacards_shape
 cp -r ../datacards_shape/MuMuTauTau datacards_shape
 text2workspace.py -m ${h} datacards_shape/MuMuTauTau/${datacard}.txt -o ${datacard}.root
 echo 'perform initial fits for' ${channelT} ${region} 'H'${h} ${year} '...'
-combineTool.py -M Impacts -m ${h} --unbinned --setParameters MA=${amass} --freezeParameters MA --setParameterRanges MA=${amass},${amass} --rMin 0 --rMax 1 --robustFit 1 -d ${datacard}.root --doInitialFit
+combineTool.py -M Impacts -m ${h} --unbinned --setParameters MA=${amass} --freezeParameters MA --setParameterRanges MA=${amass},${amass} --rMin -1 --rMax 1 --robustFit 1 -d ${datacard}.root --doInitialFit
 echo 'compute impacts for' ${channelT} ${region} 'H'${h} ${year} '...'
-combineTool.py -M Impacts -m ${h} --unbinned --setParameters MA=${amass} --freezeParameters MA --setParameterRanges MA=${amass},${amass} --rMin 0 --rMax 1 --robustFit 1 -d ${datacard}.root --doFits --parallel 10
+combineTool.py -M Impacts -m ${h} --unbinned --setParameters MA=${amass} --freezeParameters MA --setParameterRanges MA=${amass},${amass} --rMin -1 --rMax 1 --robustFit 1 -d ${datacard}.root --doFits --parallel 10
 echo 'extract impacts for' ${channelT} ${region} 'H'${h} ${year} '...'
-combineTool.py -M Impacts -m ${h} --unbinned --setParameters MA=${amass} --freezeParameters MA --setParameterRanges MA=${amass},${amass} --rMin 0 --rMax 1 --robustFit 1 -d ${datacard}.root --output impacts_${channelT}_${region}_${year}_h${h}_a${amass}.json
+combineTool.py -M Impacts -m ${h} --unbinned --setParameters MA=${amass} --freezeParameters MA --setParameterRanges MA=${amass},${amass} --rMin -1 --rMax 1 --robustFit 1 -d ${datacard}.root --output impacts_${channelT}_${region}_${year}_h${h}_a${amass}.json
 plotImpacts.py -i impacts_${channelT}_${region}_${year}_h${h}_a${amass}.json -o impacts_${channelT}_${region}_${year}_h${h}_a${amass}
 rm -rf ${datacard}.root
 rm -rf datacards_shape
